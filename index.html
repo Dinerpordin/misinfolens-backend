@@ -3,37 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MisinfoLens – Free AI Fact Checker (Instant Demo + Pro)</title>
+    <title>MisinfoLens – Expert AI Fact Checker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; }
-        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes counter {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .score-anim { animation: counter 0.5s ease-out forwards; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(229, 231, 235, 0.5); }
+        .dark .glass-card { background: rgba(31, 41, 55, 0.8); border: 1px solid rgba(75, 85, 99, 0.4); }
+        .score-gradient { background: conic-gradient(#ef4444 0deg, #eab308 120deg, #22c55e 240deg); }
+        @keyframes pulse-ring { 0% { transform: scale(.33); opacity: 0; } 80%, 100% { opacity: 0; } }
+        .badge-glow { position: relative; }
+        .badge-glow::after { content: ''; position: absolute; width: 100%; height: 100%; background: inherit; border-radius: inherit; animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; z-index: -1; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-white">
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <i class="fas fa-shield-halved text-xl"></i>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100 min-h-screen">
+    <header class="sticky top-0 z-50 glass-card border-b">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-magnifying-glass-chart text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">MisinfoLens</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-semibold">Instant Truth Check</p>
+                    <h1 class="text-xl font-extrabold tracking-tight">MisinfoLens</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Deep Investigative Analysis</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="proBadge" class="hidden px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 animate-pulse">PRO MODE ACTIVE</span>
-                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span id="proBadge" class="hidden px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] font-black rounded-full shadow-lg shadow-orange-500/20 uppercase tracking-wider badge-glow">Pro Investigative</span>
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
                     <i class="fas fa-moon dark:hidden"></i>
                     <i class="fas fa-sun hidden dark:block"></i>
                 </button>
@@ -41,139 +41,181 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-12">
-        <div class="text-center mb-12">
-            <h2 class="text-4xl font-extrabold mb-4 sm:text-5xl">Instant truth check for any webpage or social post</h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400">Free tier powered by Groq • Pro unlocks xAI Grok + deepfakes</p>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-gray-100 dark:border-gray-700">
-            <div class="flex space-x-8 border-b border-gray-200 dark:border-gray-700 mb-8">
-                <button onclick="switchTab('url')" id="tab-url" class="pb-4 text-sm font-semibold transition-all tab-active">
-                    <i class="fas fa-link mr-2"></i>Paste URL
-                </button>
-                <button onclick="switchTab('text')" id="tab-text" class="pb-4 text-sm font-semibold transition-all text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-align-left mr-2"></i>Paste Raw Text
-                </button>
-                <button onclick="switchTab('image')" id="tab-image" class="pb-4 text-sm font-semibold transition-all text-gray-400 hover:text-gray-600 flex items-center">
-                    <i class="fas fa-image mr-2"></i>Deepfake Check <span class="ml-2 text-[10px] bg-blue-100 text-blue-600 px-1 rounded">PRO</span>
-                </button>
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Input Section -->
+        <section class="mb-12">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-black mb-3">Intelligence Assessment</h2>
+                <p class="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">Upload a URL or paste text for a comprehensive forensic truth analysis.</p>
             </div>
 
-            <div id="content-url" class="space-y-4">
-                <input type="url" id="urlInput" placeholder="https://example.com/news-article" class="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-            </div>
+            <div class="glass-card rounded-3xl p-2 shadow-xl mb-6">
+                <div class="flex p-1 bg-gray-100 dark:bg-gray-900 rounded-2xl mb-4">
+                    <button id="tab-url" onclick="switchTab('url')" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all tab-active bg-white dark:bg-gray-800 shadow-sm">Analyze URL</button>
+                    <button id="tab-text" onclick="switchTab('text')" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all text-gray-500">Analyze Text</button>
+                </div>
 
-            <div id="content-text" class="hidden space-y-4">
-                <textarea id="textInput" rows="6" placeholder="Paste the content you want to verify here..." class="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
-            </div>
-
-            <div id="content-image" class="hidden space-y-4">
-                <div id="imageUploadArea" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 text-center relative group overflow-hidden">
-                    <input type="file" id="fileInput" class="hidden" accept="image/*">
-                    <div id="proLockOverlay" class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-10">
-                        <div class="text-white text-center p-4">
-                            <i class="fas fa-lock text-3xl mb-4"></i>
-                            <p class="font-bold">Deepfake Analysis is a Pro Feature</p>
-                            <button onclick="openUpgradeModal()" class="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">Upgrade to Pro</button>
+                <div class="p-4 pt-0">
+                    <div id="content-url">
+                        <div class="relative">
+                            <i class="fas fa-link absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="url" id="urlInput" placeholder="https://news-article-to-check.com/..." class="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-gray-100 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium">
                         </div>
                     </div>
+                    <div id="content-text" class="hidden">
+                        <textarea id="textInput" placeholder="Paste the content or claims here for investigative check..." rows="5" class="w-full p-4 rounded-2xl border-none bg-gray-100 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"></textarea>
+                    </div>
+                </div>
+
+                <div class="p-4 pt-0 flex gap-3">
+                    <button id="freeBtn" onclick="analyze('free')" class="flex-[2] py-4 bg-gray-800 dark:bg-white dark:text-gray-900 text-white font-bold rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                        <span>Standard Analysis</span>
+                        <span class="text-[10px] opacity-60 px-1.5 py-0.5 border border-white/20 rounded">FREE</span>
+                    </button>
+                    <button id="proBtn" onclick="analyze('pro')" class="flex-[3] py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-2xl hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                        <i class="fas fa-bolt-lightning"></i>
+                        <span>Pro Investigative Analysis</span>
+                    </button>
+                </div>
+            </div>
+            <p class="text-center text-[11px] text-gray-400">
+                <i class="fas fa-shield-halved mr-1"></i> Data analyzed securely. No keys required.
+            </p>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden space-y-8 animate-pulse">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <h3 class="text-xl font-bold" id="loadStatus">Initializing Neural Analysis...</h3>
+                <p class="text-sm text-gray-500 mt-2" id="loadSub">Consulting knowledge graph and checking sources...</p>
+            </div>
+        </div>
+
+        <!-- Detailed Results Container -->
+        <div id="results" class="hidden space-y-8">
+            <!-- 1. Top Level Verdict -->
+            <div class="glass-card rounded-3xl overflow-hidden shadow-2xl">
+                <div class="p-8 flex flex-col md:flex-row items-center gap-8">
+                    <div class="relative w-40 h-40 flex items-center justify-center rounded-full border-[10px] border-gray-100 dark:border-gray-800" id="scoreCircle">
+                        <div class="text-center">
+                            <span id="scoreDisplay" class="text-5xl font-black block leading-none">0</span>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-gray-400">Truth Score</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                            <span id="scoreEmoji" class="text-3xl">🤔</span>
+                            <h3 id="verdictDisplay" class="text-3xl font-black tracking-tighter uppercase">Analyzing...</h3>
+                        </div>
+                        <p id="summaryDisplay" class="text-gray-600 dark:text-gray-400 leading-relaxed font-medium"></p>
+                    </div>
+                </div>
+                <div id="proOnlyBrief" class="hidden bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-900/30 p-6">
+                    <h4 class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2">Executive Briefing (Pro)</h4>
+                    <p id="briefDisplay" class="text-sm italic leading-relaxed"></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 2. Source & Tone -->
+                <div class="glass-card rounded-3xl p-6">
+                    <h4 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-4"><i class="fas fa-building-columns mr-2"></i>Source Reliability</h4>
                     <div class="space-y-4">
-                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400"></i>
-                        <p class="text-gray-500">Drag and drop or click to upload screenshot</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button onclick="analyze('free')" id="freeBtn" class="flex items-center justify-center space-x-2 p-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold transition-all">
-                    <span>Analyze Free</span>
-                    <span class="text-[10px] text-gray-500 font-normal">(Groq Fallback)</span>
-                </button>
-                <button onclick="analyze('pro')" id="proBtn" class="flex items-center justify-center space-x-2 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all">
-                    <i class="fas fa-bolt"></i>
-                    <span>Analyze as Pro</span>
-                </button>
-            </div>
-        </div>
-
-        <div id="results" class="hidden space-y-8 animate-fade-in">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
-                <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-6">
-                    <div class="text-center sm:text-left">
-                        <p class="text-sm text-gray-500 uppercase tracking-widest font-bold mb-1">Truth Score</p>
-                        <div class="flex items-center justify-center sm:justify-start space-x-4">
-                            <span id="scoreDisplay" class="text-6xl font-black text-blue-600">0%</span>
-                            <span id="scoreEmoji" class="text-5xl">🤔</span>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold">Credibility Rating</span>
+                            <span id="sourceRating" class="px-3 py-1 rounded-lg text-xs font-black uppercase">Unknown</span>
+                        </div>
+                        <p id="sourceNotes" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed"></p>
+                        <hr class="border-gray-100 dark:border-gray-800">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold">Emotional Tone</span>
+                            <span id="toneDisplay" class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs font-black uppercase">Neutral</span>
                         </div>
                     </div>
-                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 text-center min-w-[200px]">
-                        <p class="text-xs text-gray-500 uppercase mb-1">Overall Verdict</p>
-                        <span id="verdictDisplay" class="text-xl font-bold tracking-tight">REAL</span>
-                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="font-bold text-lg mb-4 flex items-center">
-                            <i class="fas fa-list-check mr-2 text-blue-500"></i>Suspicious Claims
-                        </h3>
-                        <ul id="claimsList" class="space-y-4"></ul>
+                <!-- 3. Bias & Propaganda -->
+                <div class="glass-card rounded-3xl p-6">
+                    <h4 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-4"><i class="fas fa-scale-balanced mr-2"></i>Political Bias</h4>
+                    <div class="space-y-4">
+                        <div id="biasScale" class="h-2 bg-gray-200 dark:bg-gray-800 rounded-full relative mb-8">
+                            <div class="absolute -top-6 left-0 text-[10px] font-bold">Left</div>
+                            <div class="absolute -top-6 right-0 text-[10px] font-bold">Right</div>
+                            <div id="biasMarker" class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-blue-600 border-2 border-white dark:border-gray-900 rounded-full transition-all duration-1000" style="left: 50%"></div>
+                        </div>
+                        <p id="biasExplanation" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed"></p>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-4 flex items-center">
-                            <i class="fas fa-triangle-exclamation mr-2 text-red-500"></i>Red Flags
-                        </h3>
-                        <ul id="flagsList" class="space-y-3"></ul>
-                    </div>
-                </div>
-                <div class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700 text-center text-xs text-gray-500 italic">
-                    Disclaimer: Always verify sources yourself. This is AI assistance only.
                 </div>
             </div>
-        </div>
 
-        <div id="loading" class="hidden text-center py-20 space-y-6">
-            <div class="relative inline-block">
-                <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-                <i class="fas fa-shield-halved absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-600 animate-pulse-slow"></i>
+            <!-- 4. Claims Analysis -->
+            <div class="glass-card rounded-3xl p-6">
+                <h4 class="text-sm font-black uppercase tracking-widest text-gray-400 mb-6"><i class="fas fa-list-check mr-2"></i>Claims Audit</h4>
+                <div id="claimsList" class="space-y-4"></div>
             </div>
-            <div>
-                <p id="loadingText" class="text-xl font-semibold text-gray-700 dark:text-gray-300">Analyzing content...</p>
-                <p id="modelInfo" class="text-sm text-gray-500 mt-2">Connecting to Groq nodes...</p>
+
+            <!-- 5. Advanced Flags (Pro) -->
+            <div id="advancedSection" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card rounded-3xl p-6 border-orange-500/20">
+                        <h4 class="text-sm font-black uppercase tracking-widest text-orange-500 mb-4"><i class="fas fa-bullhorn mr-2"></i>Propaganda Tactics</h4>
+                        <div id="propagandaTags" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="glass-card rounded-3xl p-6 border-red-500/20">
+                        <h4 class="text-sm font-black uppercase tracking-widest text-red-500 mb-4"><i class="fas fa-triangle-exclamation mr-2"></i>Content Manipulation</h4>
+                        <div id="flagsTags" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-3xl p-6">
+                    <h4 class="text-sm font-black uppercase tracking-widest text-blue-500 mb-4"><i class="fas fa-eye mr-2"></i>Audience Manipulation Analysis</h4>
+                    <p id="manipulationDisplay" class="text-sm leading-relaxed text-gray-600 dark:text-gray-400"></p>
+                </div>
+            </div>
+
+            <!-- 6. Recommendations -->
+            <div class="bg-gray-900 text-white rounded-3xl p-8 shadow-2xl">
+                <h4 class="text-lg font-black mb-4 flex items-center">
+                    <span class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mr-3 text-sm">
+                        <i class="fas fa-lightbulb"></i>
+                    </span>
+                    Recommended Next Steps
+                </h4>
+                <ul id="recList" class="space-y-3"></ul>
             </div>
         </div>
     </main>
 
-    <div id="proCTA" class="fixed bottom-8 right-8 z-40">
-        <button onclick="openUpgradeModal()" class="group flex items-center space-x-3 bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold shadow-2xl hover:scale-105 transition-all">
-            <i class="fas fa-crown text-yellow-400 group-hover:rotate-12 transition-transform"></i>
-            <span>Upgrade to Pro</span>
-            <span class="text-xs bg-white/20 px-2 py-0.5 rounded ml-2">$4.99/mo</span>
-        </button>
-    </div>
-
-    <div id="upgradeModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
-            <button onclick="closeUpgradeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4 text-3xl">
-                    <i class="fas fa-bolt"></i>
+    <!-- License Modal -->
+    <div id="upgradeModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-md p-8 shadow-2xl animate-in zoom-in duration-300">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-bolt-lightning text-2xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold">Unleash Pro Power</h3>
-                <p class="text-gray-500 mt-2">Get deeper insights with xAI Grok and deepfake detection.</p>
+                <h3 class="text-2xl font-black mb-2">Upgrade to Pro</h3>
+                <p class="text-gray-500 text-sm">Unlock forensic-level analysis powered by Grok-3 and reasoning models.</p>
             </div>
-            <ul class="space-y-4 mb-8">
-                <li class="flex items-center space-x-3"><i class="fas fa-check-circle text-green-500"></i><span>Smarter xAI Grok (reasoning model)</span></li>
-                <li class="flex items-center space-x-3"><i class="fas fa-check-circle text-green-500"></i><span>Deepfake analysis</span></li>
-                <li class="flex items-center space-x-3"><i class="fas fa-check-circle text-green-500"></i><span>Unlimited checks</span></li>
-            </ul>
-            <a href="#" class="block w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-center mb-4 transition-all">Subscribe for $4.99/mo</a>
-            <div class="flex items-center py-4"><div class="flex-grow border-t border-gray-200"></div><span class="px-4 text-gray-400 text-sm">Or Enter License Key</span><div class="flex-grow border-t border-gray-200"></div></div>
-            <input type="text" id="licenseKeyInput" placeholder="pro-xxxx-xxxx" class="w-full p-3 border rounded-xl dark:bg-gray-900 border-gray-300 dark:border-gray-600 mb-2">
-            <button onclick="activateLicense()" class="w-full py-2 bg-gray-100 dark:bg-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all">Activate Key</button>
+            
+            <div class="space-y-3 mb-8">
+                <div class="flex items-center text-sm"><i class="fas fa-check-circle text-green-500 mr-2"></i> Deep bias & propaganda detection</div>
+                <div class="flex items-center text-sm"><i class="fas fa-check-circle text-green-500 mr-2"></i> Executive journalist-grade briefing</div>
+                <div class="flex items-center text-sm"><i class="fas fa-check-circle text-green-500 mr-2"></i> Unlimited deep-dives per month</div>
+            </div>
+
+            <div class="space-y-4">
+                <button class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20">Subscribe for $4.99/mo</button>
+                <div class="relative py-2 flex items-center">
+                    <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+                    <span class="flex-shrink mx-4 text-xs font-bold text-gray-400 uppercase">Or Enter License Key</span>
+                    <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="licenseKeyInput" placeholder="pro-xxxx-xxxx" class="flex-1 p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="activateLicense()" class="px-4 bg-gray-800 dark:bg-white dark:text-gray-900 text-white rounded-xl font-bold text-sm">Activate</button>
+                </div>
+            </div>
+            <button onclick="closeUpgradeModal()" class="mt-6 w-full text-xs font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">Maybe Later</button>
         </div>
     </div>
 
@@ -190,9 +232,13 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            ['url', 'text', 'image'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.toggle('tab-active', t === tab);
-                document.getElementById(`tab-${t}`).classList.toggle('text-gray-400', t !== tab);
+            ['url', 'text'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                btn.classList.toggle('tab-active', t === tab);
+                btn.classList.toggle('bg-white', t === tab);
+                btn.classList.toggle('dark:bg-gray-800', t === tab);
+                btn.classList.toggle('shadow-sm', t === tab);
+                btn.classList.toggle('text-gray-500', t !== tab);
                 document.getElementById(`content-${t}`).classList.toggle('hidden', t !== tab);
             });
         }
@@ -208,67 +254,134 @@
                 isPro = true;
                 updateProUI();
                 closeUpgradeModal();
-                alert('Pro Mode Activated!');
+                alert('Investigative Pro Mode Activated!');
             } else alert('Invalid license key.');
         }
 
         function updateProUI() {
             if (isPro) {
                 document.getElementById('proBadge').classList.remove('hidden');
-                document.getElementById('proCTA').classList.add('hidden');
-                document.getElementById('proLockOverlay').classList.add('hidden');
                 document.getElementById('proBtn').innerHTML = '<i class="fas fa-bolt-lightning"></i><span>Analyze as Pro (Active)</span>';
             }
         }
 
         async function analyze(tier) {
             if (tier === 'pro' && !isPro) return openUpgradeModal();
-            const resDiv = document.getElementById('results');
-            const loadDiv = document.getElementById('loading');
-            resDiv.classList.add('hidden');
-            loadDiv.classList.remove('hidden');
-            document.getElementById('modelInfo').innerText = tier === 'pro' ? 'Consulting xAI Grok Reasoner...' : 'Using Free Groq tier...';
+            
+            const content = currentTab === 'url' ? document.getElementById('urlInput').value : document.getElementById('textInput').value;
+            if (!content) return alert('Please provide content or URL');
+
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            
+            const statuses = ["Decrypting Narrative...", "Consulting Neural Graph...", "Cross-referencing Sources...", tier === 'pro' ? "Executing Reasoner-3 Policy..." : "Scanning for Manipulation..."];
+            let idx = 0;
+            const statusInt = setInterval(() => {
+                document.getElementById('loadStatus').innerText = statuses[idx++ % statuses.length];
+            }, 2000);
 
             try {
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-license-key': localStorage.getItem('pro_key') || '' },
-                    body: JSON.stringify({ type: currentTab, content: currentTab === 'url' ? document.getElementById('urlInput').value : document.getElementById('textInput').value, tier })
+                    body: JSON.stringify({ type: currentTab, content, tier })
                 });
+                
+                clearInterval(statusInt);
+                if (!response.ok) throw new Error('Analysis failed');
                 const data = await response.json();
-                if (response.status === 429) { alert('Rate limit exceeded!'); loadDiv.classList.add('hidden'); return; }
-                displayResults(data);
-            } catch (error) {
-                console.warn('API error, demo fallback');
-                setTimeout(() => displayResults({ score: 75, verdict: 'MOSTLY REAL', claims: [{ text: 'Main event in Farnham', status: 'True', evidence: 'Verified.' }], flags: ['Hyperbolic headline'], emoji: '✅' }), 2000);
+                displayDetailedResults(data);
+            } catch (err) {
+                clearInterval(statusInt);
+                alert('Analysis failed. Please check your internet or API keys.');
+                document.getElementById('loading').classList.add('hidden');
             }
         }
 
-        function displayResults(data) {
+        function displayDetailedResults(data) {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('results').classList.remove('hidden');
+            
+            // Score & Circle
             const scoreDisp = document.getElementById('scoreDisplay');
-            scoreDisp.innerText = data.score + '%';
-            scoreDisp.className = `text-6xl font-black score-anim ${data.score > 80 ? 'text-green-600' : data.score > 50 ? 'text-yellow-600' : 'text-red-600'}`;
-            document.getElementById('scoreEmoji').innerText = data.score > 80 ? '✅' : data.score > 50 ? '⚠️' : '❌';
+            scoreDisp.innerText = data.score;
+            const color = data.score > 80 ? '#22c55e' : data.score > 50 ? '#eab308' : '#ef4444';
+            document.getElementById('scoreCircle').style.borderColor = color;
+            scoreDisp.style.color = color;
+            
+            document.getElementById('scoreEmoji').innerText = data.emoji;
             document.getElementById('verdictDisplay').innerText = data.verdict;
+            document.getElementById('verdictDisplay').style.color = color;
+            document.getElementById('summaryDisplay').innerText = data.summary;
+
+            // Pro Executive Briefing
+            const proBrief = document.getElementById('proOnlyBrief');
+            if (data.isPro && data.executiveBrief) {
+                proBrief.classList.remove('hidden');
+                document.getElementById('briefDisplay').innerText = data.executiveBrief;
+            } else proBrief.classList.add('hidden');
+
+            // Source & Tone
+            const sr = document.getElementById('sourceRating');
+            sr.innerText = data.sourceCredibility.rating;
+            sr.className = `px-3 py-1 rounded-lg text-xs font-black uppercase ${data.sourceCredibility.rating === 'high' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            document.getElementById('sourceNotes').innerText = data.sourceCredibility.notes + (data.sourceCredibility.domainReputation ? ` Domain is ${data.sourceCredibility.domainReputation}.` : '');
+            document.getElementById('toneDisplay').innerText = data.emotionalTone;
+
+            // Bias
+            const biasMap = { 'left': '0%', 'center-left': '25%', 'center': '50%', 'center-right': '75%', 'right': '100%', 'unknown': '50%' };
+            document.getElementById('biasMarker').style.left = biasMap[data.bias.direction] || '50%';
+            document.getElementById('biasExplanation').innerText = data.bias.explanation;
+
+            // Claims
             const claimsL = document.getElementById('claimsList');
-            const flagsL = document.getElementById('flagsList');
-            claimsL.innerHTML = ''; flagsL.innerHTML = '';
+            claimsL.innerHTML = '';
             data.claims.forEach(c => {
-                const li = document.createElement('li');
-                li.className = `p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border-l-4 ${c.status === 'True' ? 'border-green-500' : 'border-red-500'}`;
-                li.innerHTML = `<div class="flex justify-between mb-1"><span class="font-bold">${c.text}</span><span class="text-xs font-bold px-2 py-0.5 rounded ${c.status === 'True' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span></div><p class="text-sm text-gray-500">${c.evidence}</p>`;
-                claimsL.appendChild(li);
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border-l-4 ${c.status === 'True' ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10' : 'border-red-500 bg-red-50/50 dark:bg-red-900/10'}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-black flex-1 pr-4">${c.text}</span>
+                        <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase ${c.status === 'True' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">${c.evidence}</p>
+                    ${c.checkSources ? `<div class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">Recommended verification: ${c.checkSources.join(', ')}</div>` : ''}
+                `;
+                claimsL.appendChild(card);
             });
-            data.flags.forEach(f => {
+
+            // Pro Sections
+            const advanced = document.getElementById('advancedSection');
+            if (data.isPro) {
+                advanced.classList.remove('hidden');
+                const proTags = (id, list) => {
+                    const container = document.getElementById(id);
+                    container.innerHTML = '';
+                    (list || []).forEach(item => {
+                        const s = document.createElement('span');
+                        s.className = `px-3 py-1 rounded-full text-[10px] font-bold bg-white dark:bg-gray-800 border ${id === 'propagandaTags' ? 'border-orange-200 dark:border-orange-900/30 text-orange-600' : 'border-red-200 dark:border-red-900/30 text-red-600'}`;
+                        s.innerText = item;
+                        container.appendChild(s);
+                    });
+                };
+                proTags('propagandaTags', data.propagandaTechniques);
+                proTags('flagsTags', data.flags);
+                document.getElementById('manipulationDisplay').innerText = data.audienceManipulation || "No significant behavioral manipulation detected.";
+            } else advanced.classList.add('hidden');
+
+            // Recommendations
+            const recL = document.getElementById('recList');
+            recL.innerHTML = '';
+            data.recommendations.forEach(r => {
                 const li = document.createElement('li');
-                li.className = 'flex items-start space-x-2 text-sm text-gray-600 dark:text-gray-400';
-                li.innerHTML = `<i class="fas fa-circle-exclamation text-red-400 mt-1"></i><span>${f}</span>`;
-                flagsL.appendChild(li);
+                li.className = 'flex items-start text-sm text-gray-300';
+                li.innerHTML = `<i class="fas fa-arrow-right text-blue-400 mt-1 mr-3 text-xs"></i><span>${r}</span>`;
+                recL.appendChild(li);
             });
+
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
+
         init();
     </script>
 </body>
