@@ -45,3 +45,5 @@ Without any key, the API endpoint will return a 401/502 from the upstream LLM pr
 
 - The frontend fetches `/api/analyze` (relative path), so it must be served from the same origin as the API — use `npm run dev` which handles both.
 - Pro tier activation uses a client-side license key prefix check (`pro-`). Enter any key starting with `pro-` in the upgrade modal to test Pro mode locally.
+- Without an LLM API key, the app still runs — the frontend, routing, validation, and UI all work. Only the actual LLM analysis call returns a 502 (upstream auth error). This is sufficient for developing and testing non-LLM features.
+- After running `next build`, you **must** delete `.next/` before restarting `next dev` — stale build artifacts cause `MODULE_NOT_FOUND` errors in the dev server.
